@@ -8,7 +8,6 @@ Essence is an autonomous agent kernel built on the **APDE** (Autonomous Planning
 
 ## Table of Contents
 
-- [What's New in v1.1](#whats-new-in-v11)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
@@ -31,83 +30,6 @@ Essence is an autonomous agent kernel built on the **APDE** (Autonomous Planning
 - [Observability](#observability)
 - [Development](#development)
 - [License](#license)
-
----
-
-## What's New in v1.1
-
-### SmartRouter — fully production-hardened
-
-The multi-provider LLM router has been completely rewritten. Every bug from the v1.0 review has been fixed and several production-readiness gaps have been closed:
-
-| Fix | Description |
-|-----|-------------|
-| **Per-provider model resolution** | Fallback providers now resolve the correct model for themselves — no more `claude-opus` sent to OpenAI |
-| **kwargs hygiene** | `model` keyword is popped from kwargs once at the top, preventing `TypeError: multiple values` on the first call |
-| **Double-checked pool init** | `_build_pool` uses a lock + flag check — no duplicate cloud provider registration under concurrent startup |
-| **add_provider safety** | `add_provider()` no longer sets `_built=True`, so calling it before `_get_providers()` no longer silently skips cloud providers |
-| **Streaming fallback safety** | If any tokens were already yielded to the caller, a failed stream raises rather than splicing two provider responses |
-| **Per-tier latency seeds** | EMA defaults are tier-aware: local ≈ 0.1 s, cheap cloud ≈ 0.5 s, premium ≈ 1.0 s |
-| **Provider-scoped env overrides** | `ESSENCE_MODEL_{PROVIDER}_{INTENT}` takes precedence; generic `ESSENCE_MODEL_{INTENT}` only applies when valid for the selected provider |
-| **TTL health cache** | Providers are pinged at most every 10 s — not on every request |
-| **Circuit breaker** | After 3 failures within 60 s a provider is skipped for 120 s |
-| **Neutral unlisted score** | Providers not in `_INTENT_PREFERENCE` score `0` (neutral), not `-10` |
-| **Thread-safe singleton** | `get_router()` uses double-checked locking |
-| **sync `status()` with models** | `status()` now fetches model lists with a 3 s timeout |
-| **Anthropic vision** | `claude-3-5-sonnet-20241022` added as the vision model for Anthropic |
-| **Shared `_resolve_model` helper** | `select()` and `select_async()` share one helper — no drift between sync/async paths |
-| **`force_provider` / `force_model`** | Both `select()` methods accept override knobs for A/B testing and debugging |
-
-### SmartPeerSelector (A2A)
-
-Composite peer scoring for Agent-to-Agent delegation:
-
-- **Capability match** — 40 % weight (task intent vs. peer's declared skills)
-- **Latency EMA** — 35 % weight (exponential moving average, updated per response)
-- **Recency** — 25 % weight (favours recently-seen peers)
-
-### PromptManager
-
-Full prompt lifecycle management with automatic learning:
-
-- CRUD prompts (title, text, category, tags)
-- Usage tracking with decay-weighted frequency scores
-- Auto-learn patterns from chat history (frequency thresholds, template detection)
-- Progressive suggestions ranked by score, returned via `/api/prompts/suggest`
-- Persistent JSON storage in the workspace
-
-### Progressive Prompt Discovery
-
-The chat empty-state quick-prompt buttons are now dynamically populated from `/api/prompts/suggest` ranked by actual usage frequency. Prompts you use most bubble to the top automatically. Defaults are used as a fallback when no history exists.
-
-### Collapsible Terminal Pane
-
-A fully functional terminal is built into the chat view:
-
-- Toggle with the **Terminal** button in the chat header or `Ctrl+\``
-- Drag the resize handle to adjust height (120 px – 70 % viewport)
-- WebSocket PTY (`/ws/terminal`) provides a real shell session with bash/sh
-- REST fallback (`POST /api/terminal/exec`) for environments where WebSocket is unavailable
-- Command history via ↑/↓ arrow keys
-- Clear button wipes output without closing the connection
-
-### Prompts View
-
-A dedicated **Prompts** tab in the sidebar provides:
-
-- Grid of all saved prompts with usage-frequency bars
-- Stats bar (total, auto-learned count, top prompt)
-- Category filter dropdown
-- New prompt modal with title, text, category, and tags
-- Delete and **Use** actions (Use injects the prompt text into the chat input)
-
-### Skill Usage-Frequency Scoring
-
-`SkillDiscovery` now records per-skill usage counts (persisted to `workspace/skills/.usage.json`) and exposes:
-
-- `skill_score(name)` — decay-weighted score
-- `top_skills(n)` — ranked list
-- `progressive_prompts(n)` — usage-ranked example prompts for the chat quick-bar
 
 ---
 
@@ -166,17 +88,17 @@ A dedicated **Prompts** tab in the sidebar provides:
 | **APDE Kernel** | `essence.boot` | Plans tasks as frozen DAGs, executes step-by-step, verifies results |
 | **Capsule Store** | `essence.infra.capsule_store` | SQLite-backed persistence for `IntentCapsule` and `PlanDAG` |
 | **GuardrailLayer** | `essence.security` | Multi-tier safety (G1–G4) with per-user quota enforcement |
-| **SmartRouter** | `essence.backends.smart_router` | Intent-aware multi-provider LLM routing with circuit breaker + TTL health cache |
+| **SmartRouter** | `essence.backends.smart_router` | Intent-aware multi-provider LLM routing with circuit breaker and TTL health cache |
 | **SmartPeerSelector** | `essence.protocols.a2a` | Composite A2A peer scoring (capability 40 % · latency EMA 35 % · recency 25 %) |
 | **Routing Fabric** | `essence.routing` | Intent → Task → Subagent routers, event bus, protocol router |
-| **PromptManager** | `essence.prompts` | CRUD + usage-frequency scoring + auto-learning + progressive suggestions |
+| **PromptManager** | `essence.prompts` | CRUD, usage-frequency scoring, auto-learning, and progressive suggestions |
 | **Skill System** | `essence.skills` | Discovery, execution, autonomous builder, usage scoring |
-| **Autonomy Layer** | `essence.autonomy` | Goal manager + curiosity engine for proactive behaviour |
+| **Autonomy Layer** | `essence.autonomy` | Goal manager and curiosity engine for proactive behaviour |
 | **Memory System** | `essence.memory` | Three-layer: working (KV) · episodic (JSONL) · semantic (vector) |
 | **Channels** | `essence.channels` | Telegram · Discord · WhatsApp · Gmail · Slack · Matrix · Teams |
 | **A2A Protocol** | `essence.protocols.a2a` | Agent-to-Agent peer discovery and orchestration |
 | **MCP Server** | `essence.tools.mcp` | Model Context Protocol endpoint for Claude Desktop / Cursor |
-| **Observability** | `essence.infra.metrics`, `essence.infra.otel` | Prometheus metrics + OpenTelemetry spans |
+| **Observability** | `essence.infra.metrics`, `essence.infra.otel` | Prometheus metrics and OpenTelemetry spans |
 
 ---
 
@@ -368,13 +290,13 @@ A collapsible PTY-backed terminal is embedded in the Chat view.
 
 **Transport:**
 
-1. **WebSocket PTY** (`ws[s]://<host>/ws/terminal`) — full interactive shell with bash/sh, terminal resize (`TIOCSWINSZ`), and streaming I/O. Used by default.
+1. **WebSocket PTY** (`ws[s]://<host>/ws/terminal`) — full interactive shell with bash/sh, terminal resize, and streaming I/O. Used by default.
 2. **REST fallback** (`POST /api/terminal/exec`) — executes single commands and returns `{stdout, stderr, returncode}`. Used when WebSocket is unavailable.
 
 **Features:**
-- Command history — ↑/↓ arrow keys
+- Command history via ↑/↓ arrow keys
 - Clear button
-- All output is escape-decoded (handles ANSI from the PTY)
+- ANSI escape decoding from the PTY
 - Working directory is the Essence workspace
 
 ---
@@ -385,7 +307,7 @@ Prompts are stored in `workspace/prompts.json` and managed through the **Prompts
 
 ### Auto-learning
 
-The `PromptManager` mines chat history for recurring patterns and promotes them to saved prompts when they cross a frequency threshold. Learned prompts are tagged `learned=True` and shown with a purple badge.
+`PromptManager` mines chat history for recurring patterns and promotes them to saved prompts when they cross a frequency threshold. Learned prompts are tagged `learned=True` and displayed with a purple badge in the UI.
 
 ### Progressive quick prompts
 
@@ -420,7 +342,7 @@ All endpoints are served by the FastAPI server started with `essence up`.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET`  | `/v1/sessions` | List sessions (X-Hermes-Session-Id continuity) |
+| `GET`  | `/v1/sessions` | List sessions |
 | `POST` | `/v1/sessions` | Create a new session |
 | `DELETE` | `/v1/sessions/{id}` | Delete a session |
 
@@ -467,7 +389,7 @@ All endpoints are served by the FastAPI server started with `essence up`.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET`  | `/api/router/status` | SmartRouter provider health + latency EMA |
+| `GET`  | `/api/router/status` | SmartRouter provider health and latency EMA |
 | `GET`  | `/api/health` | System health (uptime, backends, circuit breakers) |
 | `GET`  | `/api/status` | Lightweight status for telemetry polling |
 | `GET`  | `/metrics` | Prometheus metrics (requires `ESSENCE_METRICS=1`) |
@@ -506,7 +428,7 @@ All endpoints are served by the FastAPI server started with `essence up`.
 2. Skip providers whose circuit breaker is open.
 3. Score each provider: `score = pref × 10 + tier × 2 + latency_score`.
 4. Resolve the model for the winning provider using the precedence chain below.
-5. Stream the completion; on failure, pick the next-ranked provider and repeat (without splicing streams).
+5. Stream the completion; on failure, pick the next-ranked provider and repeat without splicing streams.
 
 ### Model resolution precedence
 
@@ -536,7 +458,7 @@ provider.list_models()[0]
 
 - Opens after **3 failures** within **60 seconds**
 - Stays open for **120 seconds** before re-attempting
-- `status()` and `status_async()` include `circuit_open: bool` per provider
+- `status()` includes `circuit_open: bool` per provider
 
 ### Environment overrides
 
@@ -557,7 +479,7 @@ composite = 0.40 × capability_match
           + 0.25 × recency_score
 ```
 
-**Capability match** is computed by comparing the task intent against the peer's declared skills from its `/.well-known/agent.json` agent card.
+**Capability match** compares the task intent against the peer's declared skills from its `/.well-known/agent.json` agent card.
 
 **Latency EMA** is updated on every completed delegation (α = 0.3).
 
@@ -662,7 +584,7 @@ Edit `SOUL.md` to change agent personality, `TOOLS.md` to restrict capabilities,
 | `ESSENCE_MODEL` | *(auto)* | Override model selection globally |
 | `ESSENCE_BACKEND` | *(auto)* | Force backend: `ollama`, `vllm`, `mlx`, `openai`, `anthropic` |
 | `ESSENCE_TIER` | *(auto)* | Override hardware tier (0–3) |
-| `ESSENCE_DEBUG` | `0` | Enable debug logging (`1` = on) |
+| `ESSENCE_DEBUG` | `0` | Enable debug logging |
 | `ESSENCE_METRICS` | `0` | Enable `/metrics` Prometheus endpoint |
 
 ### SmartRouter model overrides
@@ -713,7 +635,7 @@ Edit `SOUL.md` to change agent personality, `TOOLS.md` to restrict capabilities,
 | `TELEGRAM_BOT_TOKEN` | Telegram Bot API token |
 | `TELEGRAM_ALLOWED_IDS` | Comma-separated allowed chat IDs |
 | `DISCORD_WEBHOOK_URL` | Discord outbound webhook |
-| `DISCORD_BOT_TOKEN` | Discord Bot API token (for polling) |
+| `DISCORD_BOT_TOKEN` | Discord Bot API token |
 | `DISCORD_CHANNEL_ID` | Discord channel to poll |
 | `SLACK_BOT_TOKEN` | Slack Bot token |
 
@@ -755,7 +677,7 @@ essence bench        # run performance benchmark
 | G3 | **Quota** | Per-user rate limiting and cost budgets |
 | G4 | **Sandbox** | OS-level container isolation for tool execution |
 
-All layers are applied in sequence before any tool call or LLM completion. A violation at any layer returns a structured error and logs to the audit trail.
+All layers are applied in sequence before any tool call or LLM completion. A violation at any layer returns a structured error and is logged to the audit trail.
 
 ### Vault
 
@@ -874,7 +796,6 @@ essence peers
 ### SmartPeerSelector routing
 
 ```bash
-# API: get ranked peers for a given intent
 GET /api/peers/smart?intent=coding
 ```
 
@@ -901,8 +822,6 @@ essence up --role worker         # execute tasks from orchestrator
 ### Prometheus metrics
 
 Enable with `ESSENCE_METRICS=1`. Metrics are exposed at `GET /metrics`.
-
-Key metrics:
 
 | Metric | Type | Description |
 |--------|------|-------------|
@@ -935,8 +854,8 @@ curl http://localhost:7860/api/health
 {
   "uptime_s": 3600,
   "version": "1.1.0",
-  "backends": [...],
-  "circuit_breakers": [...],
+  "backends": ["ollama", "openai"],
+  "circuit_breakers": [],
   "retry_queue_size": 0,
   "active_sessions": 2,
   "rate_limiter": "in-process",
@@ -1003,7 +922,7 @@ essence/
 │   └── capsule_store/       # SQLite capsule + plan persistence
 │
 ├── integrations/            # integration store and registry
-├── intelligence/            # state detector, wisdom engine, briefing, …
+├── intelligence/            # state detector, wisdom engine, briefing
 ├── memory/                  # three-layer memory system
 │
 ├── prompts/                 # PromptManager — CRUD, usage scoring, auto-learn
@@ -1016,7 +935,7 @@ essence/
 │
 ├── server/                  # FastAPI server
 │   ├── api.py               # all REST + WebSocket endpoints
-│   ├── static_ui.html       # single-file web UI (4900+ lines)
+│   ├── static_ui.html       # single-file web UI
 │   ├── app.py               # ASGI app factory
 │   ├── sse_manager.py       # server-sent events manager
 │   └── opencanvas.py        # OpenCanvas collaborative workspace
