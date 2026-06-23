@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: safety_pass = True
+Outputs must not contain harmful instructions, PII, credential strings, or injection patterns. The G11 guardrail is the enforcement point.
+Verified by: GuardrailLayer.post_exec_output().

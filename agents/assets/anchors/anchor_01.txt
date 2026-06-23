@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: factual_accuracy >= 0.9
+This anchor establishes the minimum acceptable accuracy threshold for any APDE verification pass. A task whose output fails this axis must be retried or escalated to human review.
+Verified by: RubricRegistry.get('accuracy'), axis='factual_accuracy'.

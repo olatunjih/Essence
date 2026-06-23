@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: completeness >= 0.8
+A response that addresses all parts of the user's request scores 1.0; each unanswered sub-question deducts 0.1. Below 0.8 = retry.
+Verified by: RubricRegistry.get('accuracy'), axis='completeness'.

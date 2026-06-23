@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Essence · Integrations</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14; --surface: #151820; --surface2: #1c2030;
+    --border: #2a3040; --accent: #5b8af5; --accent2: #7c5bf5;
+    --green: #4ade80; --yellow: #facc15; --red: #f87171; --dim: #6b7280;
+    --text: #e2e8f0; --text2: #94a3b8;
+    --radius: 10px; --font: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* ── top nav ── */
+  nav { display: flex; align-items: center; gap: 16px; padding: 12px 24px;
+        background: var(--surface); border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; z-index: 10; }
+  nav a { color: var(--text2); text-decoration: none; font-size: 14px; }
+  nav a:hover { color: var(--text); }
+  .nav-brand { font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .nav-brand span { font-size: 18px; }
+  .nav-sep { color: var(--border); }
+
+  /* ── layout ── */
+  .layout { display: flex; height: calc(100vh - 49px); overflow: hidden; }
+  aside { width: 220px; min-width: 220px; background: var(--surface);
+          border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; }
+  aside .cat-label { padding: 4px 16px 8px; font-size: 11px; font-weight: 600;
+                     color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+  aside button { display: flex; align-items: center; gap: 10px; width: 100%;
+                 padding: 8px 16px; background: none; border: none; cursor: pointer;
+                 color: var(--text2); font-size: 13px; text-align: left;
+                 border-left: 2px solid transparent; transition: all .15s; }
+  aside button:hover { background: var(--surface2); color: var(--text); }
+  aside button.active { background: rgba(91,138,245,.12); color: var(--accent);
+                        border-left-color: var(--accent); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot.ok { background: var(--green); }
+  .dot.off { background: var(--dim); }
+  .dot.dis { background: var(--yellow); }
+
+  main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 28px; }
+
+  /* ── cards grid ── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          padding: 20px; transition: border-color .2s; cursor: pointer; }
+  .card:hover { border-color: var(--accent); }
+  .card.configured { border-color: rgba(74,222,128,.25); }
+  .card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .card-icon { font-size: 24px; line-height: 1; }
+  .card-title { font-weight: 600; font-size: 15px; }
+  .card-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .card-status { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .badge.active { background: rgba(74,222,128,.15); color: var(--green); }
+  .badge.off { background: rgba(107,114,128,.15); color: var(--dim); }
+  .badge.disabled { background: rgba(250,204,21,.12); color: var(--yellow); }
+  .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+  /* ── buttons ── */
+  .btn { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+         background: var(--surface2); color: var(--text); font-size: 12px;
+         cursor: pointer; transition: all .15s; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #4a78e8; }
+  .btn.danger { border-color: var(--red); color: var(--red); }
+  .btn.danger:hover { background: rgba(248,113,113,.1); }
+  .btn.small { padding: 4px 10px; font-size: 11px; }
+
+  /* ── modal ── */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7);
+             display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .overlay.hidden { display: none; }
+  .modal { background: var(--surface); border: 1px solid var(--border);
+           border-radius: 14px; width: 520px; max-width: 95vw; max-height: 88vh;
+           overflow-y: auto; padding: 28px; }
+  .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .modal-icon { font-size: 28px; }
+  .modal-title { font-size: 18px; font-weight: 700; }
+  .modal-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .modal-close { margin-left: auto; background: none; border: none; color: var(--dim);
+                 cursor: pointer; font-size: 20px; }
+  .modal-close:hover { color: var(--text); }
+
+  /* ── form ── */
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--text2);
+          margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+  label .opt { font-weight: 400; color: var(--dim); }
+  input, textarea, select {
+    width: 100%; padding: 9px 12px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 7px; color: var(--text);
+    font-size: 13px; font-family: var(--font); outline: none;
+    transition: border-color .15s; }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 72px; font-family: monospace; font-size: 12px; }
+  .hint { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .hint a { color: var(--accent); }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .toggle { width: 40px; height: 22px; border-radius: 11px; background: var(--border);
+            border: none; cursor: pointer; position: relative; transition: background .2s; }
+  .toggle.on { background: var(--accent); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+                   border-radius: 50%; background: #fff; transition: left .2s; }
+  .toggle.on::after { left: 21px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+                  padding-top: 16px; border-top: 1px solid var(--border); }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--dim);
+                   text-transform: uppercase; letter-spacing: .08em;
+                   margin-bottom: 12px; margin-top: 8px; }
+
+  /* ── test result ── */
+  .test-result { margin-top: 14px; padding: 12px 14px; border-radius: 7px;
+                 font-size: 12px; font-family: monospace; white-space: pre-wrap; }
+  .test-result.ok { background: rgba(74,222,128,.08); border: 1px solid rgba(74,222,128,.25); color: var(--green); }
+  .test-result.fail { background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.25); color: var(--red); }
+  .test-result.loading { color: var(--dim); }
+
+  /* ── custom provider section ── */
+  .provider-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .provider-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+                   background: var(--surface2); border: 1px solid var(--border);
+                   border-radius: 7px; }
+  .provider-item .name { font-weight: 600; font-size: 13px; flex: 1; }
+  .provider-item .url { font-size: 11px; color: var(--dim); }
+
+  /* ── header actions ── */
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .page-head h1 { margin-bottom: 0; }
+  .page-head .subtitle { margin-bottom: 0; }
+  .spacer { flex: 1; }
+  .status-bar { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+          padding: 10px 16px; font-size: 13px; }
+  .stat-val { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .stat-lbl { color: var(--dim); font-size: 11px; }
+
+  /* ── providers panel ── */
+  .provider-status-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .provider-status-table th { text-align: left; padding: 6px 12px; color: var(--dim);
+                               font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+                               border-bottom: 1px solid var(--border); }
+  .provider-status-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .provider-status-table tr:last-child td { border-bottom: none; }
+  .model-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { padding: 2px 7px; border-radius: 20px; background: var(--surface2);
+          border: 1px solid var(--border); font-size: 11px; color: var(--text2); }
+
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; }
+    aside { width: 100%; min-width: 0; height: auto; display: flex; overflow-x: auto; padding: 8px; }
+    aside button { white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; }
+    aside button.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+  }
+
+  /* ── terminal section ── */
+  #terminal-section {
+    display: none; flex-direction: column;
+    height: calc(100vh - 49px); background: #0a0c0f;
+  }
+  #terminal-section.visible { display: flex; }
+  .term-toolbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .term-toolbar .term-title {
+    font-size: 13px; font-weight: 600; color: var(--text2);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .term-toolbar .spacer { flex: 1; }
+  .term-status { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .term-status.connected { background: rgba(74,222,128,.15); color: var(--green); }
+  .term-status.disconnected { background: rgba(107,114,128,.15); color: var(--dim); }
+  #term-container {
+    flex: 1; padding: 8px; overflow: hidden;
+  }
+  #term-container .xterm { height: 100%; }
+  .nav-tab { color: var(--text2); text-decoration: none; font-size: 14px;
+             cursor: pointer; background: none; border: none; font-family: var(--font); }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span>⚡</span> Essence</div>
+  <span class="nav-sep">/</span>
+  <a href="/">Dashboard</a>
+  <span class="nav-sep">/</span>
+  <a href="/integrations" style="color:var(--text)">Integrations</a>
+  <div style="flex:1"></div>
+  <button class="btn small" onclick="testAll()">⚡ Test All</button>
+  <button class="btn small primary" onclick="showProviders()">📡 Provider Status</button>
+</nav>
+
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main id="main-content">
+    <div class="page-head">
+      <div>
+        <h1 id="page-title">All Integrations</h1>
+        <div class="subtitle" id="page-sub">Manage API keys, channels, and external services</div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div class="status-bar" id="status-bar"></div>
+    <div class="grid" id="cards-grid"></div>
+  </main>
+</div>
+
+<!-- Edit modal -->
+<div class="overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <span class="modal-icon" id="m-icon"></span>
+      <div>
+        <div class="modal-title" id="m-title"></div>
+        <div class="modal-sub" id="m-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="m-body"></div>
+    <div class="test-result hidden" id="test-result"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="testCurrent()">🔌 Test Connection</button>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveIntegration()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Provider status modal -->
+<div class="overlay hidden" id="provider-overlay" onclick="closeProviders(event)">
+  <div class="modal" style="width:680px" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <span class="modal-icon">📡</span>
+      <div><div class="modal-title">LLM Provider Status</div>
+           <div class="modal-sub">Live availability &amp; model discovery</div></div>
+      <button class="modal-close" onclick="closeProviders()">✕</button>
+    </div>
+    <div id="provider-body"><div style="color:var(--dim);font-size:13px">Loading…</div></div>
+  </div>
+</div>
+
+<script>
+const API = '/api/integrations';
+let _data = null;
+let _current = null;
+let _enabled = true;
+
+const CATS = ['llm','channel','productivity','observability','voice','search'];
+const CAT_LABELS = {
+  llm: '🧠 LLM Providers', channel: '💬 Messaging',
+  productivity: '📋 Productivity', observability: '📈 Observability',
+  voice: '🔊 Voice', search: '🔍 Search',
+};
+
+async function load() {
+  const r = await fetch(API);
+  _data = await r.json();
+  renderSidebar();
+  renderCards('all');
+  renderStatusBar();
+}
+
+function renderSidebar() {
+  const el = document.getElementById('sidebar');
+  let html = `<div style="padding:8px 16px 4px">
+    <button class="active" onclick="renderCards('all',this)">
+      <span>📦</span> All integrations
+    </button></div>`;
+  for (const cat of CATS) {
+    const items = _data.categories[cat] || [];
+    if (!items.length) continue;
+    const active = items.filter(i=>i.configured && i.enabled).length;
+    html += `<div class="cat-label">${CAT_LABELS[cat]}</div>`;
+    html += `<button onclick="renderCards('${cat}',this)">
+      <div class="dot ${active>0?'ok':'off'}"></div>
+      <span>${items.length} integration${items.length!==1?'s':''}</span>
+    </button>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderStatusBar() {
+  const all = Object.values(_data.categories).flat();
+  const configured = all.filter(i=>i.configured).length;
+  const active = all.filter(i=>i.configured&&i.enabled).length;
+  const custom = (_data.custom_providers||[]).length;
+  document.getElementById('status-bar').innerHTML = `
+    <div class="stat"><div class="stat-val">${all.length}</div><div class="stat-lbl">Total</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--green)">${active}</div><div class="stat-lbl">Active</div></div>
+    <div class="stat"><div class="stat-val">${configured}</div><div class="stat-lbl">Configured</div></div>
+    <div class="stat"><div class="stat-val">${custom}</div><div class="stat-lbl">Custom Providers</div></div>
+  `;
+}
+
+function renderCards(cat, btn) {
+  document.querySelectorAll('aside button').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelector('aside button')?.classList.add('active');
+
+  const title = cat==='all' ? 'All Integrations' : (CAT_LABELS[cat]||cat);
+  document.getElementById('page-title').textContent = title;
+
+  let items = cat==='all'
+    ? Object.values(_data.categories).flat()
+    : (_data.categories[cat]||[]);
+
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = items.map(i => `
+    <div class="card ${i.configured?'configured':''}" onclick="openModal('${i.id}')">
+      <div class="card-head">
+        <span class="card-icon">${i.icon}</span>
+        <div>
+          <div class="card-title">${i.name}</div>
+          <div class="card-desc">${i.description}</div>
+        </div>
+        <div class="card-status">
+          <span class="badge ${i.configured&&i.enabled?'active':i.configured&&!i.enabled?'disabled':'off'}">
+            ${i.configured&&i.enabled?'● active':i.configured?'⏸ disabled':'○ not set'}
+          </span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn small primary" onclick="event.stopPropagation();openModal('${i.id}')">Configure</button>
+        ${i.configured?`<button class="btn small" onclick="event.stopPropagation();quickTest('${i.id}',this)">Test</button>`:''}
+        ${i.docs_url?`<a href="${i.docs_url}" target="_blank" style="margin-left:auto">
+          <button class="btn small" onclick="event.stopPropagation()">Docs ↗</button></a>`:''}
+      </div>
+    </div>
+  `).join('');
+
+  // Append custom providers section if llm or all
+  if (cat === 'all' || cat === 'llm') {
+    renderCustomSection();
+  }
+}
+
+function renderCustomSection() {
+  const custom = _data.custom_providers || [];
+  const grid = document.getElementById('cards-grid');
+  const sec = document.createElement('div');
+  sec.style.cssText = 'grid-column:1/-1;';
+  sec.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;margin-top:8px">
+      <div class="section-label" style="margin:0">⚙️ Custom OpenAI-Compatible Providers</div>
+      <button class="btn small primary" onclick="openCustomModal()">+ Add Provider</button>
+    </div>
+    <div class="provider-list" id="custom-list">
+      ${custom.length ? custom.map(p=>`
+        <div class="provider-item">
+          <div>
+            <div class="name">${p.name}</div>
+            <div class="url">${p.base_url}</div>
+            ${p.description?`<div style="font-size:11px;color:var(--dim);margin-top:2px">${p.description}</div>`:''}
+          </div>
+          ${(p.models||[]).length?`<div class="model-chips">${p.models.slice(0,3).map(m=>`<span class="chip">${m}</span>`).join('')}</div>`:''}
+          <button class="btn small" onclick="testCustom('${p.name}',this)">Test</button>
+          <button class="btn small danger" onclick="removeCustom('${p.name}')">Remove</button>
+        </div>`).join('')
+      : '<div style="color:var(--dim);font-size:13px;padding:8px 0">No custom providers. Add one above.</div>'}
+    </div>`;
+  grid.appendChild(sec);
+}
+
+// ── modal ────────────────────────────────────────────────────────────────────
+
+async function openModal(id) {
+  const r = await fetch(`${API}/${id}`);
+  const data = await r.json();
+  const all  = Object.values(_data.categories).flat();
+  const defn = all.find(i=>i.id===id) || {id,name:id,icon:'🔌',description:'',credential_fields:[],optional_fields:[],settings_fields:[],docs_url:''};
+  _current = id;
+  _enabled = data.enabled;
+
+  document.getElementById('m-icon').textContent  = defn.icon;
+  document.getElementById('m-title').textContent = defn.name;
+  document.getElementById('m-sub').textContent   = defn.description;
+
+  const fields = [...(defn.credential_fields||[]), ...(defn.optional_fields||[])];
+  const optional = new Set(defn.optional_fields||[]);
+
+  let html = '';
+  if (defn.docs_url) html += `<div style="margin-bottom:16px"><a href="${defn.docs_url}" target="_blank" style="color:var(--accent);font-size:12px">📖 View docs ↗</a></div>`;
+
+  if (fields.length) {
+    html += `<div class="section-label">Credentials</div>`;
+    for (const f of fields) {
+      const cur = (data.credentials||{})[f] || '';
+      const isSecret = /key|token|dsn|secret|password|credentials/.test(f);
+      const opt = optional.has(f) ? ' <span class="opt">(optional)</span>' : '';
+      html += `<div class="field">
+        <label>${f}${opt}</label>
+        <input type="${isSecret?'password':'text'}" id="field-${f}"
+          placeholder="${cur?'(saved — leave blank to keep)':''}"
+          value="${cur==='***'?'':''}" autocomplete="off"/>
+      </div>`;
+    }
+  }
+
+  if ((defn.settings_fields||[]).length) {
+    html += `<div class="section-label" style="margin-top:8px">Settings</div>`;
+    const sets = data.settings||{};
+    for (const sf of defn.settings_fields) {
+      html += `<div class="field">
+        <label>${sf}</label>
+        <input type="text" id="setting-${sf}" value="${sets[sf]||''}" placeholder="optional"/>
+      </div>`;
+    }
+  }
+
+  html += `<div class="toggle-row">
+    <span style="font-size:13px">Enable integration</span>
+    <button class="toggle ${_enabled?'on':''}" id="toggle-enabled"
+      onclick="this.classList.toggle('on');_enabled=this.classList.contains('on')"></button>
+  </div>`;
+
+  document.getElementById('m-body').innerHTML = html;
+  document.getElementById('test-result').className = 'test-result hidden';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal(evt) {
+  if (evt && evt.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.add('hidden');
+  _current = null;
+}
+
+async function saveIntegration() {
+  if (!_current) return;
+  const all    = Object.values(_data.categories).flat();
+  const defn   = all.find(i=>i.id===_current)||{credential_fields:[],optional_fields:[],settings_fields:[]};
+  const fields = [...(defn.credential_fields||[]),...(defn.optional_fields||[])];
+  const creds  = {};
+  for (const f of fields) {
+    const el = document.getElementById(`field-${f}`);
+    if (el && el.value) creds[f] = el.value;
+  }
+  const settings = {};
+  for (const sf of (defn.settings_fields||[])) {
+    const el = document.getElementById(`setting-${sf}`);
+    if (el && el.value) settings[sf] = el.value;
+  }
+  await fetch(`${API}/${_current}`, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({credentials:creds, settings, enabled:_enabled}),
+  });
+  closeModal();
+  await load();
+}
+
+async function testCurrent() {
+  if (!_current) return;
+  const el = document.getElementById('test-result');
+  el.className = 'test-result loading';
+  el.textContent = 'Testing connection…';
+  try {
+    const r = await fetch(`${API}/${_current}/test`, {method:'POST'});
+    const d = await r.json();
+    if (d.ok) {
+      el.className = 'test-result ok';
+      el.textContent = '✓ Connection OK\n' + JSON.stringify(d, null, 2).replace(/^{|}$/g,'').trim();
+    } else {
+      el.className = 'test-result fail';
+      el.textContent = '✗ ' + (d.error || 'Connection failed');
+    }
+  } catch(e) {
+    el.className = 'test-result fail';
+    el.textContent = '✗ ' + e.message;
+  }
+}
+
+async function quickTest(id, btn) {
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${API}/${id}/test`, {method:'POST'});
+    const d = await r.json();
+    btn.textContent = d.ok ? '✓' : '✗';
+    btn.style.color = d.ok ? 'var(--green)' : 'var(--red)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.color='';btn.disabled=false;}, 2000);
+  } catch {
+    btn.textContent = '✗'; btn.disabled = false;
+  }
+}
+
+async function testAll() {
+  const r = await fetch(`${API}/test/all`, {method:'POST'});
+  const d = await r.json();
+  const lines = Object.entries(d.results).map(([id,res])=>
+    `${res.ok?'✓':'✗'} ${id}: ${res.ok?'OK':(res.error||'fail')}`
+  ).join('\n');
+  alert('Connection test results:\n\n' + lines);
+}
+
+// ── providers panel ───────────────────────────────────────────────────────────
+
+async function showProviders() {
+  document.getElementById('provider-overlay').classList.remove('hidden');
+  document.getElementById('provider-body').innerHTML =
+    '<div style="color:var(--dim);font-size:13px;padding:12px 0">Loading providers…</div>';
+  const r = await fetch(`${API}/providers/status`);
+  const d = await r.json();
+  if (!d.providers || !d.providers.length) {
+    document.getElementById('provider-body').innerHTML =
+      '<div style="color:var(--dim);font-size:13px">No providers configured. Add an API key above.</div>';
+    return;
+  }
+  let html = `<table class="provider-status-table">
+    <thead><tr><th>Provider</th><th>Status</th><th>Latency</th><th>Models</th></tr></thead><tbody>`;
+  for (const p of d.providers) {
+    const status = p.alive
+      ? '<span style="color:var(--green)">● alive</span>'
+      : '<span style="color:var(--dim)">○ down</span>';
+    const lat = p.latency_ema >= 0 ? p.latency_ema.toFixed(2)+'s' : '—';
+    const chips = (p.models||[]).slice(0,5).map(m=>`<span class="chip">${m}</span>`).join('');
+    html += `<tr><td><strong>${p.name}</strong></td><td>${status}</td><td>${lat}</td>
+             <td><div class="model-chips">${chips||'<span style="color:var(--dim)">—</span>'}</div></td></tr>`;
+  }
+  html += `</tbody></table>`;
+  html += `<div style="margin-top:16px">
+    <button class="btn" onclick="loadModels()">🔍 Discover All Models</button>
+  </div><div id="model-discovery"></div>`;
+  document.getElementById('provider-body').innerHTML = html;
+}
+
+async function loadModels() {
+  document.getElementById('model-discovery').innerHTML =
+    '<div style="color:var(--dim);font-size:12px;margin-top:12px">Discovering models…</div>';
+  const r = await fetch(`${API}/providers/models`);
+  const d = await r.json();
+  let html = '<div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">';
+  for (const p of (d.providers||[])) {
+    if (!p.alive) continue;
+    html += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 14px">
+      <div style="font-weight:600;margin-bottom:6px">${p.provider}</div>
+      <div class="model-chips">${(p.models||[]).map(m=>`<span class="chip">${m}</span>`).join('')}</div>
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('model-discovery').innerHTML = html;
+}
+
+function closeProviders(evt) {
+  if (evt && evt.target !== document.getElementById('provider-overlay')) return;
+  document.getElementById('provider-overlay').classList.add('hidden');
+}
+
+// ── custom providers ──────────────────────────────────────────────────────────
+
+function openCustomModal() {
+  _current = '__custom__';
+  document.getElementById('m-icon').textContent  = '⚙️';
+  document.getElementById('m-title').textContent = 'Add Custom Provider';
+  document.getElementById('m-sub').textContent   = 'Any OpenAI-compatible endpoint';
+  document.getElementById('m-body').innerHTML = `
+    <div class="field"><label>Provider Name</label>
+      <input id="cp-name" placeholder="e.g. my-llm or lm-studio"/></div>
+    <div class="field"><label>Base URL</label>
+      <input id="cp-url" placeholder="http://localhost:8080"/></div>
+    <div class="field"><label>API Key <span class="opt">(optional)</span></label>
+      <input id="cp-key" type="password" placeholder="sk- (leave blank if not required)"/></div>
+    <div class="field"><label>Known Models <span class="opt">(comma-separated, or blank to auto-discover)</span></label>
+      <input id="cp-models" placeholder="llama-3,mistral-7b"/></div>
+    <div class="field"><label>Description <span class="opt">(optional)</span></label>
+      <input id="cp-desc"/></div>`;
+  document.getElementById('test-result').className = 'test-result hidden';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.querySelector('.modal-footer .btn.primary').onclick = saveCustom;
+  document.querySelector('.modal-footer .btn:first-child').onclick = testCustomFromModal;
+}
+
+async function saveCustom() {
+  const name = document.getElementById('cp-name').value.trim();
+  const url  = document.getElementById('cp-url').value.trim();
+  if (!name || !url) { alert('Name and Base URL are required.'); return; }
+  const models = document.getElementById('cp-models').value
+    .split(',').map(s=>s.trim()).filter(Boolean);
+  await fetch(`${API}/custom/providers`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      name, base_url: url,
+      api_key: document.getElementById('cp-key').value || 'sk-',
+      models, description: document.getElementById('cp-desc').value,
+    }),
+  });
+  closeModal();
+  await load();
+}
+
+async function testCustomFromModal() {
+  const name = document.getElementById('cp-name')?.value?.trim();
+  if (!name) { alert('Enter a name first.'); return; }
+  const el = document.getElementById('test-result');
+  el.className = 'test-result loading';
+  el.textContent = 'Testing…';
+  // First save, then test
+  await saveCustom();
+  const r = await fetch(`${API}/custom/providers/${encodeURIComponent(name)}/test`, {method:'POST'});
+  const d = await r.json();
+  el.className = `test-result ${d.alive?'ok':'fail'}`;
+  el.textContent = d.alive
+    ? `✓ Alive\nModels: ${(d.models||[]).join(', ')||'(none discovered)'}`
+    : '✗ Not reachable — check base URL';
+}
+
+async function testCustom(name, btn) {
+  const orig = btn.textContent; btn.textContent='…'; btn.disabled=true;
+  try {
+    const r = await fetch(`${API}/custom/providers/${encodeURIComponent(name)}/test`, {method:'POST'});
+    const d = await r.json();
+    btn.textContent = d.alive ? '✓' : '✗';
+    btn.style.color = d.alive ? 'var(--green)' : 'var(--red)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.color='';btn.disabled=false;},2000);
+  } catch { btn.textContent='✗'; btn.disabled=false; }
+}
+
+async function removeCustom(name) {
+  if (!confirm(`Remove custom provider "${name}"?`)) return;
+  await fetch(`${API}/custom/providers/${encodeURIComponent(name)}`, {method:'DELETE'});
+  await load();
+}
+
+// ── init ──────────────────────────────────────────────────────────────────────
+load();
+</script>
+</body>
+</html>

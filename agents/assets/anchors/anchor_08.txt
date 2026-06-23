@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: conciseness <= 2000 tokens
+Responses that exceed the token budget without commensurate information density are penalised. Verbose padding lowers this axis score.
+Verified by: JudgeRunner word-count heuristic.

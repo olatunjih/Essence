@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: timeliness — completed within SLA
+Tasks with a deadline parameter must complete before that deadline. SLA breach does not fail the task but is recorded in the SQE ledger and triggers a ProactiveEngine alert.
+Verified by: SQESampler elapsed_time check.

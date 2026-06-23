@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: coherence >= 0.85
+The response must be internally consistent and logically structured. Contradictions between paragraphs, broken argument chains, or incoherent conclusions fail this axis.
+Verified by: LLM judge rubric, axis='coherence'.

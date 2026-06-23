@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: relevance >= 0.9
+The response must address the stated task. Off-topic content, even if high quality, scores 0 on this axis and triggers a retry.
+Verified by: IntentCapsule.goal cross-reference.

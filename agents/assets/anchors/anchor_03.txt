@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: citation_present = True
+Research tasks must include at least one verifiable citation or source reference. Bare assertions without provenance fail this axis.
+Verified by: RubricRegistry.get('docs'), axis='citation_present'.

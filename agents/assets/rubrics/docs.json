@@ -1,0 +1,27 @@
+{
+  "id": "docs",
+  "description": "Measures documentation quality, citation, and actionability.",
+  "axes": [
+    {
+      "name": "actionability",
+      "weight": 0.35,
+      "min_pass": 0.7
+    },
+    {
+      "name": "coherence",
+      "weight": 0.3,
+      "min_pass": 0.85
+    },
+    {
+      "name": "relevance",
+      "weight": 0.25,
+      "min_pass": 0.9
+    },
+    {
+      "name": "citation_present",
+      "weight": 0.1,
+      "min_pass": 0.0
+    }
+  ],
+  "min_overall": 0.75
+}

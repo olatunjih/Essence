@@ -1,0 +1,27 @@
+{
+  "id": "code",
+  "description": "Measures code correctness, style, and tool-use compliance.",
+  "axes": [
+    {
+      "name": "code_correctness",
+      "weight": 0.5,
+      "min_pass": 0.85
+    },
+    {
+      "name": "tool_use_correct",
+      "weight": 0.25,
+      "min_pass": 0.9
+    },
+    {
+      "name": "format_compliance",
+      "weight": 0.15,
+      "min_pass": 1.0
+    },
+    {
+      "name": "conciseness",
+      "weight": 0.1,
+      "min_pass": 0.0
+    }
+  ],
+  "min_overall": 0.8
+}

@@ -1,0 +1,8 @@
+{
+  "rubrics": {
+    "accuracy.json": "0dfd900e2b57d6f8ea75a94026e9dc8adb8cb12e008c9b560078c97e091d8116",
+    "code.json": "9da3ae61f42f3a4791f948d9266c3a5acb76624fa186d303ee3b7929f7478d26",
+    "docs.json": "ba922bba5091fc82d83c81e7fbc76e029195b5089e933d88ffd20ff7273a2b2a",
+    "safety.json": "7a4d54ae4b913e1e3910292d3ae8d1b0601b70d69c1244664a3db07a1672d413"
+  }
+}

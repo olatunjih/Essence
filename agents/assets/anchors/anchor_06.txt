@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: tool_use_correct >= 0.9
+Every tool call in the output must use the tool's documented argument schema. Type errors, missing required fields, or calls to non-existent tools all fail this axis.
+Verified by: G11 post_exec_output gate.

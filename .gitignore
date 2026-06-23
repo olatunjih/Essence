@@ -1,0 +1,201 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+MANIFEST
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.Python
+
+# ── Distribution / packaging ──────────────────────────────────────────────────
+develop-eggs/
+downloads/
+.eggs/
+*.egg-link
+*.egg-info
+
+# ── Unit test / coverage ──────────────────────────────────────────────────────
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+junit*.xml
+test-results/
+
+# ── Type checkers ─────────────────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.pyre/
+
+# ── Linters / formatters ──────────────────────────────────────────────────────
+.ruff_cache/
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints
+*.ipynb
+
+# ── Secrets & credentials ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.toml
+credentials.json
+token.json
+service_account.json
+.essence_vault
+*_vault
+
+# ── Databases ─────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+*.jsonl
+logs/
+
+# ── Essence workspace runtime state ───────────────────────────────────────────
+# These are persisted per-user data files — not part of source distribution.
+
+# Memory layers
+workspace/episodic.db
+workspace/episodic.jsonl
+workspace/semantic.db
+workspace/knowledge_graph.db
+workspace/working.json
+
+# Audit + cost
+workspace/audit.db
+workspace/cost_log.jsonl
+
+# Session transcripts
+workspace/sessions/
+workspace/scratch/
+workspace/tmp/
+
+# Channel state
+workspace/channel_identity.json
+workspace/discord_cursor.json
+
+# Prompt library (user data)
+workspace/prompts.json
+
+# Skill usage counters
+workspace/skills/.usage.json
+
+# Version stamp
+workspace/.essence_version
+
+# Auto-generated TUI app
+workspace/tui_app.py
+
+# Workspace root shorthand
+.essence_workspace/
+
+# ── Compiled / generated artifacts ───────────────────────────────────────────
+*.pyc
+*.pyo
+*.pyd
+*.whl
+*.tar.gz
+*.zip
+
+# ── OS junk ───────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.orig
+*.bak
+*.rej
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ── Profiling ─────────────────────────────────────────────────────────────────
+*.prof
+*.lprof
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.dockerignore
+
+# ── CI / CD ───────────────────────────────────────────────────────────────────
+.github/
+.circleci/
+.travis.yml
+
+# ── Replit platform ───────────────────────────────────────────────────────────
+.replit
+replit.nix
+.cache/
+.local/
+.upm/
+.config/
+zipFile.zip
+
+# ── ML / vector index artifacts ───────────────────────────────────────────────
+*.faiss
+*.index
+*.npy
+*.npz
+*.pkl
+*.pickle
+
+# ── LLM model weights (never commit these) ────────────────────────────────────
+*.gguf
+*.ggml
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+models/
+model_cache/

@@ -1,0 +1,220 @@
+{
+  "rules": [
+    {
+      "id": "DG-001",
+      "description": "Rule 001",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-002",
+      "description": "Rule 002",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-003",
+      "description": "Rule 003",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-004",
+      "description": "Rule 004",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-005",
+      "description": "Rule 005",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-006",
+      "description": "Rule 006",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-007",
+      "description": "Rule 007",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-008",
+      "description": "Rule 008",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-009",
+      "description": "Rule 009",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-010",
+      "description": "Rule 010",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-011",
+      "description": "Rule 011",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-012",
+      "description": "Rule 012",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-013",
+      "description": "Rule 013",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-014",
+      "description": "Rule 014",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-015",
+      "description": "Rule 015",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-016",
+      "description": "Rule 016",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-017",
+      "description": "Rule 017",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-018",
+      "description": "Rule 018",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-019",
+      "description": "Rule 019",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-020",
+      "description": "Rule 020",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-021",
+      "description": "Rule 021",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-022",
+      "description": "Rule 022",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-023",
+      "description": "Rule 023",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    },
+    {
+      "id": "DG-024",
+      "description": "Rule 024",
+      "risk": "LOW",
+      "tools": [],
+      "writes_glob": "",
+      "guardrail_link": "",
+      "action": "allow"
+    }
+  ]
+}

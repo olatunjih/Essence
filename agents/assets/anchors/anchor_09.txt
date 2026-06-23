@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: format_compliance = True
+When the task specifies an output format (JSON, Markdown, CSV) the response must parse cleanly in that format. Malformed output = 0.
+Verified by: JudgeRunner format validators.

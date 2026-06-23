@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: no_hallucination = True
+The output must not assert facts that cannot be grounded in the provided context or well-known public knowledge. Detected via SoT extraction + cross-reference.
+Verified by: APDEVerifier internal consistency check.

@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: actionability >= 0.7
+The response must be actionable — the user should be able to act on it without further clarification in the majority of cases.
+Verified by: LLM judge rubric, axis='actionability'.

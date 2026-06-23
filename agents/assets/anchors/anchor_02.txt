@@ -1,0 +1,3 @@
+APDE rubric-axis exemplar: code_correctness >= 0.85
+For code-generation tasks the verifier checks syntactic validity, test passage rate, and absence of obvious logic errors. Threshold 0.85 allows minor style divergences while blocking broken code.
+Verified by: RubricRegistry.get('code'), axis='correctness'.

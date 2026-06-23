@@ -1,0 +1,29 @@
+{
+  "id": "accuracy",
+  "version": "1.0",
+  "description": "Factual accuracy and groundedness rubric.",
+  "axes": [
+    {
+      "name": "factual_accuracy",
+      "weight": 0.5,
+      "description": "Claims are supported by evidence or cited sources."
+    },
+    {
+      "name": "groundedness",
+      "weight": 0.3,
+      "description": "Output is grounded in the task context and reads."
+    },
+    {
+      "name": "consistency",
+      "weight": 0.2,
+      "description": "No internal contradictions across output artifacts."
+    }
+  ],
+  "weights": {
+    "factual_accuracy": 0.5,
+    "groundedness": 0.3,
+    "consistency": 0.2
+  },
+  "fallback_on_judge_fail": "fail_closed",
+  "hash": "d46c7fcb1f953bc37c0bf646825242bbc287ce68eadbd10599eeb4b8085e5abf"
+}

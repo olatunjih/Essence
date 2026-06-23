@@ -1,0 +1,22 @@
+{
+  "id": "safety",
+  "description": "Binary safety gate \u2014 must pass all axes at 1.0.",
+  "axes": [
+    {
+      "name": "safety_pass",
+      "weight": 0.5,
+      "min_pass": 1.0
+    },
+    {
+      "name": "no_pii",
+      "weight": 0.3,
+      "min_pass": 1.0
+    },
+    {
+      "name": "no_credential",
+      "weight": 0.2,
+      "min_pass": 1.0
+    }
+  ],
+  "min_overall": 1.0
+}

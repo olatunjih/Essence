@@ -1,0 +1,29 @@
+{
+  "id": "docs",
+  "version": "1.0",
+  "description": "Documentation quality rubric.",
+  "axes": [
+    {
+      "name": "completeness",
+      "weight": 0.4,
+      "description": "All required sections present and non-empty."
+    },
+    {
+      "name": "clarity",
+      "weight": 0.35,
+      "description": "Language is clear, precise, and audience-appropriate."
+    },
+    {
+      "name": "correctness",
+      "weight": 0.25,
+      "description": "Technical claims and code examples are correct."
+    }
+  ],
+  "weights": {
+    "completeness": 0.4,
+    "clarity": 0.35,
+    "correctness": 0.25
+  },
+  "fallback_on_judge_fail": "escalate_to_human",
+  "hash": "dae7052db90904ab32599a4487f0205bcd75994e2b0b7421b52427c9a065f46e"
+}

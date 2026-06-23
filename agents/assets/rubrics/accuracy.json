@@ -1,0 +1,27 @@
+{
+  "id": "accuracy",
+  "description": "Measures factual correctness, completeness, and absence of hallucination.",
+  "axes": [
+    {
+      "name": "factual_accuracy",
+      "weight": 0.4,
+      "min_pass": 0.9
+    },
+    {
+      "name": "completeness",
+      "weight": 0.3,
+      "min_pass": 0.8
+    },
+    {
+      "name": "no_hallucination",
+      "weight": 0.2,
+      "min_pass": 1.0
+    },
+    {
+      "name": "citation_present",
+      "weight": 0.1,
+      "min_pass": 0.0
+    }
+  ],
+  "min_overall": 0.85
+}
